@@ -5,11 +5,24 @@ const path = require('path');
 const booksRoutes = require('./Routes/books');
 const userRoutes = require('./Routes/user');
 
-mongoose.connect('mongodb+srv://Vulcain:Vulcain30*@books.fxnm0.mongodb.net/Books?retryWrites=true&w=majority',
+require('dotenv').config;
+
+console.log(process.env.MONGO_URL);  
+
+mongoose
+.connect(process.env.MONGO_URL)
+.then(() => console.log("Connexion à MongoDB réussie !"))
+.catch((error) => {
+  console.log("Connexion à MongoDB échouée !");
+  console.error(error);  // Afficher l'erreur complète pour plus de détails
+});
+
+/*mongoose.connect('mongodb+srv://Vulcain:Vulcain30*@books.fxnm0.mongodb.net/Books?retryWrites=true&w=majority',
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
-  .catch(() => console.log('Connexion à MongoDB échouée !'));
+  .catch(() => console.log('Connexion à MongoDB échouée !'));*/
+
 
   const app = express();
 

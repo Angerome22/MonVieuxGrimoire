@@ -83,62 +83,6 @@ exports.createRateBook = (req, res, next) => {
       res.status(500).json({ error });
     });
 };
-  
-
-
-/*exports.modifyBook = (req, res, next) => {
-  let bookObject;
-  try {
-    // Si un fichier est envoyé, parse le contenu de req.body.book pour obtenir les autres données du livre
-    bookObject = req.file ? {
-      ...JSON.parse(req.body.book),
-      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-    } : { ...req.body };
-  } catch (error) {
-    // Capture et retourne une erreur si le parsing JSON échoue
-    console.error('Erreur de parsing JSON:', error);
-    return res.status(400).json({ message: 'Données mal formatées', error });
-  }
-
-  // Empêche la modification de l'userId dans la requête
-  delete bookObject._userId;
-
-  // Cherche le livre à modifier dans la base de données
-  Book.findOne({ _id: req.params.id })
-    .then((book) => {
-      if (!book) {
-        return res.status(404).json({ message: 'Livre non trouvé' });
-      }
-
-      // Vérifie si l'utilisateur est autorisé à modifier le livre
-      if (book.userId != req.auth.userId) {
-        return res.status(403).json({ message: 'Requête non autorisée' });
-      }
-
-      // Supprime l'ancienne image si une nouvelle est ajoutée
-      if (req.file) {
-        const oldImagePath = book.imageUrl.split('/images/')[1];
-        fs.unlink(`images/${oldImagePath}`, (err) => {
-          if (err) {
-            console.error('Erreur lors de la suppression de l\'ancienne image :', err);
-          }
-        });
-      }
-
-      // Met à jour le livre dans la base de données
-      Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
-        .then(() => res.status(200).json({ message: 'Livre modifié!' }))
-        .catch(error => {
-          console.error('Erreur lors de la mise à jour du livre:', error);
-          res.status(401).json({ error });
-        });
-    })
-    .catch((error) => {
-      console.error('Erreur lors de la recherche du livre:', error);
-      res.status(400).json({ error });
-    });
-};*/
-
 
 exports.modifyBook = (req, res, next) => {
   const bookObject = req.file
