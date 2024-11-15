@@ -66,7 +66,7 @@ exports.createRateBook = (req, res, next) => {
       // Calcule la nouvelle note moyenne
       const totalRatings = book.ratings.length;
       const totalGrade = book.ratings.reduce((sum, rate) => sum + rate.grade, 0);
-      book.averageRating = totalGrade / totalRatings;
+      book.averageRating = Math.round((totalGrade / totalRatings)*10)/10;
 
       // Enregistre les modifications
       book.save()
@@ -83,12 +83,6 @@ exports.createRateBook = (req, res, next) => {
       res.status(500).json({ error });
     });
 };
-
-
-  
-  //ajouter la fonction createRateBook //
-
-
   
   exports.modifyBook = (req, res, next) => {
     const bookObject = req.file ? {
@@ -97,16 +91,25 @@ exports.createRateBook = (req, res, next) => {
   } : { ...req.body };
 
   delete bookObject._userId;
+
   Book.findOne({_id: req.params.id})
       .then((book) => {
           if (book.userId != req.auth.userId) {
-              res.status(401).json({ message : 'Not authorized'});
-          } else {
+              res.status(403).json({ message : 'unauthorized request'});
+          }
+          if (req.file) {
+            const oldImagePath = book.imageUrl.split('/images/')[1]; // Extraction du nom de l'image
+            fs.unlink(`images/${oldImagePath}`, (err) => {
+              if (err) {
+                console.error('Erreur lors de la suppression de l\'ancienne image :', err);
+              }
+            });
+          }
               Book.updateOne({ _id: req.params.id}, { ...bookObject, _id: req.params.id})
               .then(() => res.status(200).json({message : 'Livre modifié!'}))
               .catch(error => res.status(401).json({ error }));
-          }
-      })
+          })
+      
       .catch((error) => {
           res.status(400).json({ error });
       });
@@ -144,6 +147,7 @@ exports.deleteBook = (req, res, next) => {
       }
     );
   };
+  
  exports.bestRatingBook = (req, res, next) => {
     Book.find()
     .sort({ averageRating: -1 }) // Trie les livres par `averageRating` de manière décroissante
