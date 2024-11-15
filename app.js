@@ -5,7 +5,7 @@ const path = require('path');
 const booksRoutes = require('./Routes/books');
 const userRoutes = require('./Routes/user');
 
-require('dotenv').config;
+require('dotenv').config();
 
 console.log(process.env.MONGO_URL);  
 
