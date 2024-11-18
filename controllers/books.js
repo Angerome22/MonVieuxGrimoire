@@ -21,15 +21,13 @@ exports.createBook = (req, res, next) => {
   const bookObject = JSON.parse(req.body.book);  
   delete bookObject._id;
   delete bookObject._userId;
-
- /* console.log(bookObject);*/
   
   const book = new Book({
       ...bookObject,
       userId: req.auth.userId,
       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
   });
-  /*console.log('Creating Book:', book);  */
+  
     book.save()
     .then(() => { res.status(201).json({message: 'livre enregistré !'})})
     .catch(error => {
@@ -103,7 +101,7 @@ exports.modifyBook = (req, res, next) => {
       }
 
       if (book.userId !== req.auth.userId) {
-        return res.status(403).json({ message: 'Requête non autorisée.' });
+        return res.status(403).json({ message: 'unauthorized request.' });
       }
 
       if (req.file) {
